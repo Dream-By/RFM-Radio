@@ -10,6 +10,10 @@ public class Configuration implements Parcelable {
 
 	private int frequency;
 
+	private int pi;
+	private int pty;
+	private int[] af;
+
 	private String ps;
 	private String rt;
 
@@ -35,6 +39,30 @@ public class Configuration implements Parcelable {
 		return rt;
 	}
 
+	public int getPi() {
+		return pi;
+	}
+
+	public void setPi(int pi) {
+		this.pi = pi;
+	}
+
+	public int getPty() {
+		return pty;
+	}
+
+	public void setPty(int pty) {
+		this.pty = pty;
+	}
+
+	public int[] getAf() {
+		return af;
+	}
+
+	public void setAf(int[] af) {
+		this.af = af;
+	}
+
 	public void setRt(String rt) {
 		this.rt = rt;
 	}
@@ -47,12 +75,18 @@ public class Configuration implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(this.frequency);
+		dest.writeInt(this.pi);
+		dest.writeInt(this.pty);
+		dest.writeIntArray(this.af);
 		dest.writeString(this.ps);
 		dest.writeString(this.rt);
 	}
 
 	protected Configuration(Parcel in) {
 		this.frequency = in.readInt();
+		this.pi = in.readInt();
+		this.pty = in.readInt();
+		this.af = in.createIntArray();
 		this.ps = in.readString();
 		this.rt = in.readString();
 	}

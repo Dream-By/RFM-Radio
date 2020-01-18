@@ -34,6 +34,9 @@ public class FMEventListenerServer extends Thread {
 	private static final int EVT_SEEK_COMPLETE = 8;
 	private static final int EVT_STEREO = 9;
 	private static final int EVT_SEARCH_DONE = 10;
+	private static final int EVT_UPDATE_PI = 15;
+	private static final int EVT_UPDATE_PTY = 16;
+	private static final int EVT_UPDATE_AF = 17;
 
 
 	public FMEventListenerServer(Context context, int port) throws IOException {
@@ -71,15 +74,10 @@ public class FMEventListenerServer extends Thread {
 		}
 	}
 
-	private String mLastRT = "";
-	private int mNextAction = 0;
-
 	private static final int RT_ACTION_NONE = 0;
 	private static final int RT_ACTION_CLEAR = 1;
 
 	private final char FF = 0x0c; // split for messages
-	private final char LF = 0x0a; // continue
-	private final char CR = 0x0d; // clear
 
 	private String handle(String data) throws StopServer {
 		int splitOn = data.indexOf(FF);
@@ -118,28 +116,8 @@ public class FMEventListenerServer extends Thread {
 				break;
 
 			case EVT_UPDATE_RT:
-				/*if (mNextAction == RT_ACTION_CLEAR) {
-					mLastRT = "";
-				}
-
-				mNextAction = data.indexOf(CR) >= 0 ? RT_ACTION_CLEAR : RT_ACTION_NONE;
-
-				Log.e("RT", str2Hex(data));
-
-				if (data.indexOf(CR) >= 0) {
-					Log.e("FMELS", "CR is here!!!!!");
-				}
-
-				if (data.indexOf(LF) >= 0) {
-					Log.e("FMELS", "LF is here!!!!!");
-				}
-
-				mLastRT += data.replace("" + CR, "");*/
-
-				mLastRT = data;
-
 				intent.setAction(C.Event.UPDATE_RT);
-				intent.putExtra(C.Key.RT, mLastRT);
+				intent.putExtra(C.Key.RT, data);
 				break;
 
 			case EVT_SEARCH_DONE:

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="frequency_mhz_height">80dp</dimen>
-	<dimen name="frequency_mhz_reflection_height">64dp</dimen>
+	<dimen name="frequency_mhz_height">70dp</dimen>
+	<dimen name="frequency_mhz_reflection_height">50dp</dimen>
 	<dimen name="frequency_info_margin_top">10dp</dimen>
 
 	<dimen name="preset_width">110dp</dimen>

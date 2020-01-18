@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="preset_list_height">64dp</dimen>
+	<dimen name="preset_list_height">70dp</dimen>
 
 	<dimen name="seek_frequency_padding_start">15dp</dimen>
 	<dimen name="seek_frequency_padding_end">35dp</dimen>

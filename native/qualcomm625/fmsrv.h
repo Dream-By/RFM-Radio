@@ -14,6 +14,9 @@
 #define EVT_SEEK_COMPLETE 8
 #define EVT_STEREO 9
 #define EVT_SEARCH_DONE 10
+#define EVT_UPDATE_PI 15
+#define EVT_UPDATE_PTY 16
+#define EVT_UPDATE_AF 17
 #define EVT_INIT 999
 
 typedef struct {
@@ -21,10 +24,11 @@ typedef struct {
 	const char* data;
 } srv_response;
 
-typedef srv_response (*fm_srv_callback) (char*);
+typedef srv_response (*fm_srv_callback)(char*);
 
 int init_server(fm_srv_callback callback);
 
 void send_interruption_info(int evt, char* message);
+void send_interruption_info_int(int evt, unsigned short message);
 
 #endif //CPP_FMSRV_H

@@ -18,6 +18,9 @@ final public class C {
 		public static final String UPDATE_RSSI = BASE + "UPDATE_RSSI";
 		public static final String UPDATE_PS = BASE + "UPDATE_PS";
 		public static final String UPDATE_RT = BASE + "UPDATE_RT";
+		public static final String UPDATE_PI = BASE + "UPDATE_PI";
+		public static final String UPDATE_PTY = BASE + "UPDATE_PTY";
+		public static final String UPDATE_AF = BASE + "UPDATE_AF";
 		public static final String UPDATE_STEREO = BASE + "UPDATE_STEREO";
 		public static final String SEARCH_DONE = BASE + "SEARCH_DONE";
 	}
@@ -38,6 +41,9 @@ final public class C {
 		public static final String RSSI = "rssi";
 		public static final String PS = "ps";
 		public static final String RT = "rt";
+		public static final String PI = "pi";
+		public static final String PTY = "pty";
+		public static final String AF = "af";
 		public static final String STEREO_MODE = "stereo_mode";
 
 		public static final String SEEK_HW_DIRECTION = "seek_hw_direction";
@@ -68,9 +74,19 @@ final public class C {
 	public static final String FM_SET_STEREO = "fm_setstereo";
 	public static final String FM_SET_MUTE = "fm_setmute";
 
-	public static final String KEY_RT = "fm_rt";
 	public static final String KEY_STATUS = "intent_fm_status";
 	public static final String KEY_MUTE = "fm_mute";
 	public static final String KEY_EVENT = "intent_fm_event";
+
+	public static final String[] PTY_STRINGS = {
+			"None", "News", "Affairs", "Info", "Sport", "Education", "Drama",
+			"Culture", "Science", "Varied Speech", "Pop Music",
+			"Rock Music", "Easy Listening", "Light Classics M",
+			"Serious Classics", "Other Music", "Weather", "Finance",
+			"Children", "Social Affairs", "Religion", "Phone In",
+			"Travel & Touring", "Leisure & Hobby", "Jazz Music",
+			"Country Music", "National Music", "Oldies Music", "Folk Music",
+			"Documentary", "Alarm Test", "Alarm!"
+	};
 
 }

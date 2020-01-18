@@ -61,8 +61,13 @@ int SLAVE_ADDR = 0x2A;
 	#define print3(x,y,z)
 #endif
 
+#define TAVARUA_BUF_SRCH_LIST 0
+#define TAVARUA_BUF_EVENTS 1
 #define TAVARUA_BUF_RT_RDS 2
 #define TAVARUA_BUF_PS_RDS 3
+#define TAVARUA_BUF_RAW_RDS 4
+#define TAVARUA_BUF_AF_LIST 5
+#define TAVARUA_BUF_PEEK 6
 #define V4L2_CID_PRIVATE_TAVARUA_STATE         0x08000004
 #define V4L2_CID_PRIVATE_TAVARUA_EMPHASIS      0x0800000C
 #define V4L2_CID_PRIVATE_TAVARUA_SPACING       0x0800000E
@@ -141,6 +146,9 @@ int fd_radio = -1;
 pthread_t fm_interrupt_thread;
 pthread_t fm_on_thread;
 
+// FM rssi thread interval call
+pthread_t fm_rssi_thread;
+
 // Prototype of FM ON thread
 fm_cmd_status_type (ftm_on_long_thread)(void *ptr);
 
@@ -148,6 +156,8 @@ fm_cmd_status_type (ftm_on_long_thread)(void *ptr);
 fm_station_params_available fm_global_params;
 
 volatile poweron_status poweron;
+
+volatile boolean fm_rssi_enable = FALSE;
 
 
 
@@ -182,8 +192,6 @@ int read_data_from_v4l2(int fd, const uint8* buf, int index) {
 	struct v4l2_buffer v4l2_buf;
 	memset(&v4l2_buf, 0, sizeof(v4l2_buf));
 
-	//reqbuf.type = V4L2_BUF_TYPE_PRIVATE;
-	//reqbuf;
 	v4l2_buf.index = index;
 	v4l2_buf.type = V4L2_BUF_TYPE_PRIVATE;
 	v4l2_buf.memory = V4L2_MEMORY_USERPTR;
@@ -258,7 +266,7 @@ boolean extract_radio_text() {
  * Helper routine to extract the list of good stations from the V4L2 buffer
  * @return NONE, If list is non empty then it prints the stations available
  */
-void stationList (int fd) {
+void stationList(int fd) {
 	int freq = 0;
 	int i = 0;
 	int station_num;
@@ -276,7 +284,7 @@ void stationList (int fd) {
 
 	printf("lowBand %f\n", lowBand);
 
-	if (read_data_from_v4l2(fd, sList, 0) < 0) {
+	if (read_data_from_v4l2(fd, sList, TAVARUA_BUF_SRCH_LIST) < 0) {
 		printf("Data read from v4l2 failed\n");
 		return;
 	}
@@ -335,6 +343,8 @@ boolean process_radio_event(uint8 event_buf) {
 			printf("FM disabled\n");
 			close(fd_radio);
 			fd_radio = -1;
+			fm_rssi_enable = FALSE;
+			pthread_join(fm_rssi_thread, NULL);
 			pthread_exit(NULL);
 			ret = FALSE;
 			break;
@@ -352,6 +362,10 @@ boolean process_radio_event(uint8 event_buf) {
 			send_interruption_info(EVT_FREQUENCY_SET, itoa(fm_global_params.current_station_freq));
 			send_interruption_info(EVT_UPDATE_PS, "");
 			send_interruption_info(EVT_UPDATE_RT, "");
+			send_interruption_info(EVT_UPDATE_PI, "");
+			send_interruption_info(EVT_UPDATE_PTY, "");
+			send_interruption_info(EVT_UPDATE_AF, "");
+			send_interruption_info(EVT_UPDATE_RSSI, "0");
 			break;
 
 		case TAVARUA_EVT_SEEK_COMPLETE:
@@ -388,6 +402,8 @@ boolean process_radio_event(uint8 event_buf) {
 			print("Received PS\n");
 			ret = extract_program_service();
 			send_interruption_info(EVT_UPDATE_PS, fm_global_params.pgm_services);
+			send_interruption_info_int(EVT_UPDATE_PI, fm_global_params.pgm_id);
+			send_interruption_info_int(EVT_UPDATE_PTY, fm_global_params.pgm_type);
 			break;
 
 		case TAVARUA_EVT_ERROR:
@@ -428,8 +444,49 @@ boolean process_radio_event(uint8 event_buf) {
 			stationList(fd_radio);
 			break;
 
+			/*
+public int[] getAFInfo() {
+    byte[] buff = new byte[STD_BUF_SIZE];
+    int[] AfList = new int[40];
+    FmReceiverJNI.getBufferNative(sFd, buff, TAVARUA_BUF_AF_LIST);
+    if (buff[TAVARUA_BUF_RAW_RDS] <= null || buff[TAVARUA_BUF_RAW_RDS] > 25) {
+        return null;
+    }
+    int lowerBand = FmReceiverJNI.getLowerBandNative(sFd);
+    Log.d(TAG, "Low band " + lowerBand);
+    Log.d(TAG, "AF_buff 0: " + (buff[0] & 0xff));
+    Log.d(TAG, "AF_buff 1: " + (buff[1] & 0xff));
+    Log.d(TAG, "AF_buff 2: " + (buff[2] & 0xff));
+    Log.d(TAG, "AF_buff 3: " + (buff[3] & 0xff));
+    Log.d(TAG, "AF_buff 4: " + (buff[4] & 0xff));
+    for (byte i = 0; i < buff[4]; ++i) {
+        AfList[i] = ((buff[i + 4] & 0xff) * Process.SYSTEM_UID) + lowerBand;
+        Log.d(TAG, "AF : " + AfList[i]);
+    }
+    return AfList;
+}
+			 */
+
 		case TAVARUA_EVT_NEW_AF_LIST:
-			print("Received new AF List\n");
+			print("Received new AF List:::\n");
+			uint8 buff[8];
+
+			struct v4l2_tuner tuner;
+			int ret = ioctl(fd_radio, VIDIOC_G_TUNER, &tuner);
+
+			int low = tuner.rangelow;
+
+			read_data_from_v4l2(fd_radio, buff, TAVARUA_BUF_AF_LIST);
+
+			if (buff[4] <= 0 || buff[4] > 25) {
+				printf("AF break : buff[4] = %d\n", buff[4]);
+				break;
+			}
+
+			for (int i = 0; i < buff[4]; ++i) {
+				printf("AF %d : %d\n", i,  ((buff[i + 4] & 0xff) * 1000) + low);
+			}
+
 			break;
 	}
 	/**
@@ -449,10 +506,6 @@ void* interrupt_thread(void *ptr) {
 	uint8 buf[128] = {0};
 	boolean status = TRUE;
 
-	struct v4l2_tuner tuner;
-	tuner.index = 0;
-	tuner.signal = 0;
-
 	int i = 0;
 	int bytesread = 0;
 	int k = 0;
@@ -462,9 +515,7 @@ void* interrupt_thread(void *ptr) {
 			break;
 
 		if (++k > 3) {
-			if (ioctl(fd_radio, VIDIOC_G_TUNER, &tuner) == 0) {
-				send_interruption_info(EVT_UPDATE_RSSI, itoa(tuner.signal));
-			}
+
 			k = 0;
 		}
 
@@ -477,6 +528,48 @@ void* interrupt_thread(void *ptr) {
 	}
 	print("FM listener thread exited\n");
 	return NULL;
+}
+
+void send_rssi(int signum) {
+	printf("!!!!!!!!!!! send_rssi\n");
+	struct v4l2_tuner tuner;
+	tuner.index = 0;
+	tuner.signal = 0;
+
+	if (ioctl(fd_radio, VIDIOC_G_TUNER, &tuner) == 0) {
+		send_interruption_info(EVT_UPDATE_RSSI, itoa(tuner.signal));
+		printf("!!!!!!!!!!! send_rssi >>> %d\n", tuner.signal);
+	}
+}
+
+void* rssi_thread(void* ptr) {
+	struct sigaction sa;
+	struct itimerval timer;
+
+	printf("!!!!!!!!!!!!!! rssi_thread");
+
+	fm_rssi_enable = TRUE;
+
+	/* Install timer_handler as the signal handler for SIGVTALRM. */
+	memset(&sa, 0, sizeof (sa));
+	sa.sa_handler = &send_rssi;
+	sigaction(SIGVTALRM, &sa, NULL);
+
+	/* Configure the timer to expire after 250 msec... */
+	timer.it_value.tv_sec = 0;
+	timer.it_value.tv_usec = 0;
+
+	/* ... and every 250 msec after that. */
+	timer.it_interval.tv_sec = 1;
+	timer.it_interval.tv_usec = 0;
+
+	setitimer(ITIMER_REAL, &timer, NULL);
+
+	printf("!!!!!!!!!!!!!! rssi_thread 2");
+
+	printf("!!!!!!!!!!!!!! rssi_thread AFTER WHILE");
+
+	pthread_exit(0);
 }
 
 int file_exists(const char* file) { // Return 1 if file, or directory, or device node etc. exists
@@ -709,6 +802,7 @@ fm_cmd_status_type (ftm_on_long_thread)(void *ptr) {
 	}
 
 	pthread_create(&fm_interrupt_thread, NULL, interrupt_thread, NULL);
+	//pthread_create(&fm_rssi_thread, NULL, rssi_thread, NULL);
 
 #ifdef FM_DEBUG
 	print("\nEnable Receiver exit\n");
@@ -833,14 +927,18 @@ fm_cmd_status_type SetFrequencyReceiver(uint32 ulfreq) {
 #endif
 
 	if (fd_radio < 0) {
+		print2("\nSetFrequency fd_radio = %d\n", fd_radio);
 		return FM_CMD_NO_RESOURCES;
 	}
 
 	freq_struct.type = V4L2_TUNER_RADIO;
-	freq_struct.frequency = (ulfreq * TUNE_MULT / 1000);
+	freq_struct.frequency = (int) (ulfreq * TUNE_MULT / 1000);
 
+	print("\nSetFrequency before");
 	err = ioctl(fd_radio, VIDIOC_S_FREQUENCY, &freq_struct);
+	print("\nSetFrequency after");
 	if (err < 0) {
+		print2("\nSetFrequency err %d", err);
 		return FM_CMD_FAILURE;
 	}
 

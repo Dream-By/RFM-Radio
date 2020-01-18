@@ -3,13 +3,15 @@ package com.vlad805.fmradio.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import com.vlad805.fmradio.R;
 
 /**
  * vlad805 (c) 2019
  */
-public class PresetListView extends LinearLayout {
+public class PresetListView extends HorizontalScrollView {
 
 	private static final int PRESET_COUNT = 20;
 
@@ -28,13 +30,15 @@ public class PresetListView extends LinearLayout {
 
 	private void init() {
 
-		LayoutInflater.from(getContext()).inflate(R.layout.preset_list, this, true);
+		LinearLayout v = new LinearLayout(getContext());
 
-		setOrientation(HORIZONTAL);
+		v.setOrientation(LinearLayout.HORIZONTAL);
 
 		for (int i = 0; i < PRESET_COUNT; ++i) {
-			addView(new PresetView(getContext()));
+			v.addView(new PresetView(getContext()));
 		}
+
+		addView(v);
 	}
 
 

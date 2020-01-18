@@ -2,8 +2,9 @@ package com.vlad805.fmradio;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
-import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.util.Arrays;
@@ -67,6 +68,17 @@ public class Utils {
 
 	public static SharedPreferences getStorage(Context ctx) {
 		return Storage.getInstance(ctx);
+	}
+
+	public static String getApplicationVersion(Context context) {
+		try {
+			PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+
+			return pInfo.versionName;
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

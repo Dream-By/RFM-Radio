@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.vlad805.fmradio.C;
 import com.vlad805.fmradio.R;
+import com.vlad805.fmradio.Utils;
 import com.vlad805.fmradio.db.FavoriteStation;
 import com.vlad805.fmradio.db.IStation;
 import com.vlad805.fmradio.enums.JumpDirection;
@@ -47,6 +48,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Radi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		((TextView) findViewById(R.id.app_version)).setText(Utils.getApplicationVersion(this));
 
 		if (getActionBar() != null) {
 			getActionBar().hide();

@@ -21,5 +21,10 @@
 	<string name="popup_station_remove">Remove</string>
 	<string name="about_version">v%s</string>
 	<string name="about_author">Vladislav Veluga © 2019</string>
+	<string name="ctl_seek_up">Seek up</string>
+	<string name="ctl_step_up">Step up</string>
+	<string name="ctl_toggle_pause">Toggle pause</string>
+	<string name="ctl_step_down">Step down</string>
+	<string name="ctl_seek_down">Seek down</string>
 
 </resources>

@@ -80,11 +80,21 @@ int init_server(fm_srv_callback callback) {
 	return 0;
 }
 
+void send_interruption_info_int(int evt, unsigned short val) {
+	char buf[8];
+
+	sprintf(buf, "%d", val);
+
+	send_interruption_info(evt, buf);
+}
+
 void send_interruption_info(int evt, char* message) {
 	int sock;
 	struct sockaddr_in addr;
 	char buf[CS_BUF];
 
+
+	printf("sending %d = %s\n", evt, message);
 	if (message == NULL) {
 		message = "";
 	}

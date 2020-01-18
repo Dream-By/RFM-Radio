@@ -17,7 +17,7 @@ public class QualComm implements IImplementation {
 	/**
 	 * Включение детальных логов
 	 */
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	private boolean mEnabled = false;
 
@@ -162,7 +162,7 @@ public class QualComm implements IImplementation {
 			int kHz;
 
 			try {
-				kHz = Integer.valueOf(data);
+				kHz = Integer.parseInt(data);
 			} catch (NumberFormatException e) {
 				kHz = -7;
 			}
@@ -185,7 +185,7 @@ public class QualComm implements IImplementation {
 			int kHz;
 			Log.i("HW_SEEK", "data res = " + data);
 			try {
-				kHz = Integer.valueOf(data);
+				kHz = Integer.parseInt(data);
 			} catch (NumberFormatException e) {
 				kHz = -2;
 			}
