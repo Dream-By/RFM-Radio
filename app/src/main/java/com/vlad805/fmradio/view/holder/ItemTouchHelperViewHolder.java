@@ -1,4 +1,4 @@
-package com.vlad805.fmradio.view;
+package com.vlad805.fmradio.view.holder;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 

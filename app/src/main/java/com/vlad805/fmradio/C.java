@@ -23,7 +23,7 @@ final public class C {
 		public static final String UPDATE_PS = BASE + "UPDATE_PS";
 		public static final String UPDATE_RT = BASE + "UPDATE_RT";
 		public static final String UPDATE_STEREO = BASE + "UPDATE_STEREO";
-		public static final String SEARCH_DONE = BASE + "SEARCH_DONE";
+		public static final String HW_SEARCH_DONE = BASE + "HW_SEARCH_DONE";
 		public static final String JUMP_COMPLETE = BASE + "JUMP_COMPLETE";
 		public static final String HW_SEEK_COMPLETE = BASE + "HW_SEEK_COMPLETE";
 
@@ -48,6 +48,7 @@ final public class C {
 		public static final String RECORD_START = "record_start";
 		public static final String RECORD_STOP = "record_stop";
 		public static final String KILL = "kill";
+		public static final String HW_SEARCH = "hw_search";
 	}
 
 	public static final class Key {

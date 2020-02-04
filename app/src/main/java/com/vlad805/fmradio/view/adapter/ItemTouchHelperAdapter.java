@@ -1,4 +1,4 @@
-package com.vlad805.fmradio.view;
+package com.vlad805.fmradio.view.adapter;
 
 /*
  * Copyright (C) 2015 Paul Burke

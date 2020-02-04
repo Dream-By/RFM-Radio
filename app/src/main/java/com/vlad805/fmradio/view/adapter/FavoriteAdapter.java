@@ -7,9 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.vlad805.fmradio.R;
 import com.vlad805.fmradio.models.FavoriteStation;
-import com.vlad805.fmradio.view.FavoriteHolder;
-import com.vlad805.fmradio.view.ItemTouchHelperAdapter;
 import com.vlad805.fmradio.view.OnDragListener;
+import com.vlad805.fmradio.view.holder.FavoriteHolder;
 
 import java.util.Collections;
 import java.util.List;

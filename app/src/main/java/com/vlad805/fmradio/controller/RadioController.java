@@ -67,6 +67,10 @@ public class RadioController {
 		send(C.Command.HW_SEEK, bundle);
 	}
 
+	public void hwSearch() {
+		send(C.Command.HW_SEARCH);
+	}
+
 	public void disable() {
 		send(C.Command.DISABLE);
 	}
@@ -87,7 +91,7 @@ public class RadioController {
 				C.Event.UPDATE_RT,
 				C.Event.UPDATE_RSSI,
 				C.Event.UPDATE_STEREO,
-				C.Event.SEARCH_DONE,
+				C.Event.HW_SEARCH_DONE,
 				C.Event.JUMP_COMPLETE,
 				C.Event.HW_SEEK_COMPLETE,
 

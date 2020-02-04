@@ -1,6 +1,7 @@
 package com.vlad805.fmradio.service.fm.impl;
 
 import android.content.Context;
+import android.util.Log;
 import com.vlad805.fmradio.BuildConfig;
 import com.vlad805.fmradio.Utils;
 import com.vlad805.fmradio.enums.MuteState;
@@ -10,6 +11,7 @@ import com.vlad805.fmradio.service.fm.communications.Poll;
 import com.vlad805.fmradio.service.fm.communications.Request;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -155,7 +157,11 @@ public class QualCommLegacy extends FMController implements IFMEventListener, IF
 
 	@Override
 	public void search(final Callback<List<Integer>> callback) {
-
+		sendCommand(new Request("search", 60000).onResponse(data -> {
+			List<Integer> res = new ArrayList<>();
+			Log.e("QCL", "hwSearch " + data);
+			callback.onResult(res);
+		}));
 	}
 
 	@Override

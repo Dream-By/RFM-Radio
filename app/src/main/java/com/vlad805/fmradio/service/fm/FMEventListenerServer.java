@@ -143,7 +143,7 @@ public class FMEventListenerServer extends Thread {
 
 				Arrays.sort(res);
 
-				action = C.Event.SEARCH_DONE;
+				action = C.Event.HW_SEARCH_DONE;
 				bundle.putIntArray(C.Key.STATION_LIST, res);
 				break;
 			}

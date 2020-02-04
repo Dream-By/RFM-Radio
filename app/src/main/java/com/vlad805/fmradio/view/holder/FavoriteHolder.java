@@ -1,4 +1,4 @@
-package com.vlad805.fmradio.view;
+package com.vlad805.fmradio.view.holder;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vlad805.fmradio.R;
 import com.vlad805.fmradio.Utils;
 import com.vlad805.fmradio.models.FavoriteStation;
+import com.vlad805.fmradio.view.OnDragListener;
 
 /**
  * vlad805 (c) 2020

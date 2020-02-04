@@ -3,6 +3,8 @@ package com.vlad805.fmradio.view;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import com.vlad805.fmradio.view.adapter.ItemTouchHelperAdapter;
+import com.vlad805.fmradio.view.holder.ItemTouchHelperViewHolder;
 
 /**
  * vlad805 (c) 2020
