@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import com.vlad805.fmradio.BuildConfig;
 import com.vlad805.fmradio.C;
+import com.vlad805.fmradio.Utils;
 import com.vlad805.fmradio.enums.MuteState;
 
 import java.util.List;
@@ -213,7 +214,21 @@ public abstract class FMController {
 	/**
 	 * Search stations
 	 */
-	public abstract void search(final Callback<List<Integer>> callback);
+	protected abstract void hwSearchImpl(final Callback<List<Integer>> callback);
+
+	public void hwSearch(final Callback<List<Integer>> callback) {
+		hwSearchImpl(res -> {});
+	}
+
+	protected abstract void swSearchImpl(final Callback<List<Integer>> callback);
+
+	public void swSearch() {
+		swSearchImpl(res -> {
+			final Bundle bundle = new Bundle();
+			bundle.putIntArray(C.Key.STATION_LIST, Utils.listIntegerToArrayInt(res));
+			fireEvent(C.Event.SW_SEARCH_DONE, bundle);
+		});
+	}
 
 	/**
 	 * Broadcast event with arguments

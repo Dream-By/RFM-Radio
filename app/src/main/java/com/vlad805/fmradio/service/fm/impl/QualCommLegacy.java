@@ -1,9 +1,12 @@
 package com.vlad805.fmradio.service.fm.impl;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import com.vlad805.fmradio.BuildConfig;
+import com.vlad805.fmradio.C;
 import com.vlad805.fmradio.Utils;
+import com.vlad805.fmradio.enums.Direction;
 import com.vlad805.fmradio.enums.MuteState;
 import com.vlad805.fmradio.service.FMRecordService;
 import com.vlad805.fmradio.service.fm.*;
@@ -156,12 +159,50 @@ public class QualCommLegacy extends FMController implements IFMEventListener, IF
 	}
 
 	@Override
-	public void search(final Callback<List<Integer>> callback) {
+	protected void hwSearchImpl(final Callback<List<Integer>> callback) {
 		sendCommand(new Request("search", 60000).onResponse(data -> {
 			List<Integer> res = new ArrayList<>();
 			Log.e("QCL", "hwSearch " + data);
 			callback.onResult(res);
 		}));
+	}
+
+	private static final String TAG = "QCL_SW_S";
+	@Override
+	protected void swSearchImpl(final Callback<List<Integer>> callback) {
+		int last = 87500;
+		final List<Integer> list = new ArrayList<>();
+		Log.d(TAG, "swSearchImpl: setup");
+
+		final Callback<Void> onDone = _v -> {
+			Log.d(TAG, "swSearchImpl: onDone");
+			final Bundle bundle = new Bundle();
+			bundle.putIntArray(C.Key.STATION_LIST, Utils.listIntegerToArrayInt(list));
+			fireEvent(C.Event.SW_SEARCH_DONE, bundle);
+		};
+
+		setFrequencyImpl(last, _v -> {
+			Log.d(TAG, "swSearchImpl: set 87500");
+			frequency = last;
+			stepSwSeek(list, onDone);
+		});
+	}
+
+	private void stepSwSeek(final List<Integer> list, final Callback<Void> onDone) {
+		Log.d(TAG, "stepSwSeek: stepSwSeek... with last ");
+		hwSeekImpl(Direction.UP.getValue(), frequency -> {
+			Log.d(TAG, "stepSwSeek: before sleep with v = " + frequency);
+			Utils.sleep(1000);
+
+			list.add(frequency);
+			Log.d(TAG, "stepSwSeek: " + frequency + "; list size = " + list.size());
+			if (frequency < list.get(list.size() - 1)) {
+				onDone.onResult(null);
+				return;
+			}
+
+			stepSwSeek(list, onDone);
+		});
 	}
 
 	@Override

@@ -1,10 +1,21 @@
 package com.vlad805.fmradio;
 
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -77,5 +88,53 @@ public class Utils {
 		long hour = Math.round(Math.floor(seconds / 60f / 60f % 60f));
 
 		return (hour > 0 ? hour + ":" : "") + String.format(Locale.ENGLISH, "%02.0f:%02.0f", minute, second);
+	}
+
+	public static int[] listIntegerToArrayInt(final List<Integer> list) {
+		final Iterator<Integer> it = list.iterator();
+		int i = 0;
+		final int[] result = new int[list.size()];
+		while (it.hasNext()) {
+			result[i++] = it.next();
+		}
+		return result;
+	}
+
+	public interface FetchCallback {
+		void onSuccess(final JSONObject result);
+		default void onError(final Throwable exception) {
+			exception.printStackTrace();
+		}
+	}
+
+	public static void fetch(final String urlString, FetchCallback callback) {
+		try {
+			final URL url = new URL(urlString);
+			final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setReadTimeout(10000);
+			connection.setConnectTimeout(15000);
+			connection.setDoOutput(true);
+			connection.connect();
+
+			final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			final StringBuilder sb = new StringBuilder();
+
+			String line;
+			while ((line = br.readLine()) != null) {
+				sb.append(line).append("\n");
+			}
+			br.close();
+
+			final JSONObject json = new JSONObject(sb.toString());
+
+			callback.onSuccess(json);
+		} catch (IOException | JSONException e) {
+			callback.onError(e);
+		}
+	}
+
+	public static void uiThread(final Runnable run) {
+		new Handler(Looper.getMainLooper()).post(run);
 	}
 }

@@ -177,11 +177,17 @@ public class FMService extends Service implements FMEventCallback {
 				mFM.setMute(MuteState.valueOf(intent.getStringExtra(C.Key.MUTE)), null);
 				break;*/
 
-			case C.Command.HW_SEARCH:
-				mFmController.search(result -> {
+			case C.Command.HW_SEARCH: {
+				mFmController.hwSearch(result -> {
 					sendBroadcast(new Intent(C.Event.HW_SEARCH_DONE).putExtra("list", result.toArray(new Integer[0])));
 				});
 				break;
+			}
+
+			case C.Command.SW_SEARCH: {
+				mFmController.swSearch();
+				break;
+			}
 
 			case C.Command.KILL: {
 				stopService(new Intent(this, FMService.class));

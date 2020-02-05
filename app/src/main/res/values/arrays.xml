@@ -3,6 +3,6 @@
 	<string-array name="station_search_select_way">
 		<item>Hardware</item>
 		<item>Software</item>
-		<item>Internet</item>
+		<item>Internet (Russia only)</item>
 	</string-array>
 </resources>

@@ -6,13 +6,10 @@ import android.os.Bundle;
 import com.vlad805.fmradio.C;
 import com.vlad805.fmradio.Utils;
 import com.vlad805.fmradio.enums.MuteState;
-import com.vlad805.fmradio.service.fm.FMController;
-import com.vlad805.fmradio.service.fm.IFMEventPoller;
-import com.vlad805.fmradio.service.fm.LaunchConfig;
-import com.vlad805.fmradio.service.fm.communications.Poll;
-import com.vlad805.fmradio.service.fm.communications.Request;
 import com.vlad805.fmradio.service.FMRecordService;
 import com.vlad805.fmradio.service.fm.*;
+import com.vlad805.fmradio.service.fm.communications.Poll;
+import com.vlad805.fmradio.service.fm.communications.Request;
 
 import java.util.List;
 
@@ -149,7 +146,12 @@ public class Spirit3Impl extends FMController implements IFMEventPoller, IFMReco
 	}
 
 	@Override
-	public void search(final Callback<List<Integer>> callback) {
+	protected void hwSearchImpl(final Callback<List<Integer>> callback) {
+
+	}
+
+	@Override
+	protected void swSearchImpl(final Callback<List<Integer>> callback) {
 
 	}
 

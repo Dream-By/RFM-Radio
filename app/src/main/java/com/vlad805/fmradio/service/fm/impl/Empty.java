@@ -107,8 +107,13 @@ public class Empty extends FMController implements IFMEventListener {
 	}
 
 	@Override
-	public void search(final Callback<List<Integer>> callback) {
+	protected void hwSearchImpl(final Callback<List<Integer>> callback) {
 		Log.d(TAG, "search");
+	}
+
+	@Override
+	protected void swSearchImpl(final Callback<List<Integer>> callback) {
+
 	}
 
 	private void sleep(final int ms) {

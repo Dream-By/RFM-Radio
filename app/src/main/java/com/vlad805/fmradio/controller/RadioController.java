@@ -71,6 +71,10 @@ public class RadioController {
 		send(C.Command.HW_SEARCH);
 	}
 
+	public void swSearch() {
+		send(C.Command.SW_SEARCH);
+	}
+
 	public void disable() {
 		send(C.Command.DISABLE);
 	}

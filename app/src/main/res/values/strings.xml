@@ -107,6 +107,14 @@
 	<string name="pref_recording_convert_title">Convert wav to mp3 on complete recording</string>
 	<string name="pref_recording_convert_summary">To do this, download ffmpeg required. Click here to continue.</string>
 	<string name="pref_info_version_title">Version</string>
+
+	<!-- Stations search -->
 	<string name="menu_station_search">Search</string>
 	<string name="station_list_search_select_way_title">Method of searching stations</string>
+	<string name="station_list_searching">Searching…</string>
+	<string name="station_list_net_find_city">Find your city</string>
+	<string name="station_list_net_hint_loading">Please, wait…</string>
+	<string name="station_list_net_hint">Start type city name…</string>
+	<string name="station_list_net_source_legal">Information about cities and stations is taken from site Victor City (vcfm.ru)</string>
+	<string name="station_list_net_fetch_stations">Fetching stations in %s…</string>
 </resources>

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vlad805.fmradio.C;
 import com.vlad805.fmradio.R;
 import com.vlad805.fmradio.controller.RadioController;
+import com.vlad805.fmradio.fragments.FindStationsWithInternet;
 import com.vlad805.fmradio.helper.ProgressDialog;
 import com.vlad805.fmradio.models.Station;
 import com.vlad805.fmradio.view.adapter.StationListAdapter;
@@ -92,7 +93,7 @@ public class StationListActivity extends AppCompatActivity {
 	};
 
 	private void searchHW() {
-		mProgress.text("Searching...").show();
+		mProgress.text(R.string.station_list_searching).show();
 
 		mRadioCtl.hwSearch();
 
@@ -100,9 +101,20 @@ public class StationListActivity extends AppCompatActivity {
 	}
 
 	private void searchManual() {
+		mProgress.text(R.string.station_list_searching).show();
+
+		mRadioCtl.swSearch();
+
+		registerReceiver(mSearchDone, new IntentFilter(C.Event.SW_SEARCH_DONE));
 	}
 
 	private void searchInternet() {
+		FindStationsWithInternet.openDialogSelectCity(this, city -> {
+			mProgress.text(getString(R.string.station_list_net_fetch_stations, city.getCity())).show();
+			FindStationsWithInternet.loadStationsByAreaId(city.getId(), list -> {
+				mProgress.hide();
+			});
+		});
 	}
 
 	@Override
